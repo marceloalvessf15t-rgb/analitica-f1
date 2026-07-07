@@ -118,10 +118,10 @@ def pagina_resultados():
     st.dataframe(df, use_container_width=True, hide_index=True)
     
 def pagina_info():
-    st.title("ℹ️ Informação da Aplicação")
+    st.title(" Informação da Aplicação")
 
-    # Texto maior (usando ###) e em itálico (usando asteriscos)
-    st.markdown(
+    # Cria uma janela de informação azul com texto grande e em itálico
+    st.info(
         "### *Esta aplicação foi desenvolvida por: Liliana Mendes e Marcelo Alves.*"
     )
 
