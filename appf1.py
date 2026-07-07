@@ -116,12 +116,20 @@ def pagina_resultados():
     st.bar_chart(df.set_index("Piloto")["Pontos"])
     st.download_button("📥 Exportar Excel", converter_para_excel(df), f"F1_Resultados_{ano}_{ronda}.xlsx")
     st.dataframe(df, use_container_width=True, hide_index=True)
+    
+def pagina_info():
+    st.title("ℹ️ Informação da Aplicação")
+    st.write("Esta aplicação foi desenvolvida por: Liliana Mendes- Marcelo Alves.")
+
+
 
 def main():
     st.sidebar.title("🏎Analítica de Dados F1 ")
-    op = st.sidebar.radio("Menu", ["Calendário da Temporada", "Resultados por Grande Prémio"])
+    op = st.sidebar.radio("Menu", ["Calendário da Temporada", "Resultados por Grande Prémio","Informaçao da aplicação"])
     if op == "Calendário da Temporada":
         pagina_calendario()
+     elif op == "Informaçao da aplicação":
+        pagina_info()
     else:
         pagina_resultados()
 
