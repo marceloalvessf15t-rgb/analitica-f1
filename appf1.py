@@ -119,7 +119,11 @@ def pagina_resultados():
     
 def pagina_info():
     st.title("ℹ️ Informação da Aplicação")
-    st.write("Esta aplicação foi desenvolvida por: Liliana Mendes- Marcelo Alves.")
+
+    # Texto maior (usando ###) e em itálico (usando asteriscos)
+    st.markdown(
+        "### *Esta aplicação foi desenvolvida por: Liliana Mendes e Marcelo Alves.*"
+    )
 
 
 
