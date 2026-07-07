@@ -128,7 +128,7 @@ def main():
     op = st.sidebar.radio("Menu", ["Calendário da Temporada", "Resultados por Grande Prémio","Informaçao da aplicação"])
     if op == "Calendário da Temporada":
         pagina_calendario()
-     elif op == "Informaçao da aplicação":
+    elif op == "Informaçao da aplicação":
         pagina_info()
     else:
         pagina_resultados()
