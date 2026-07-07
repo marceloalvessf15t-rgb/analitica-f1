@@ -29,7 +29,7 @@ def obter_calendario_ano(ano):
         schedule = schedule[schedule["EventFormat"] != "testing"]
         df = schedule[["RoundNumber", "EventName", "OfficialEventName", "Location", "Country", "EventDate"]].copy()
         
-        # Formatar a data para exibir apenas o dia (Ano-Mês-Dia)
+        # Formatar a data para exibir  (dia-mes e ano)
         df["EventDate"] = pd.to_datetime(df["EventDate"]).dt.strftime('%d-%m-%Y')
         
         df.columns = ["Ronda", "Grande Prémio", "Nome Oficial do grande prémio", "Localidade", "País", "Data"]
@@ -72,7 +72,7 @@ def pagina_calendario():
         st.download_button("📥 Exportar Excel", converter_para_excel(df), f"F1_Calendario_{ano}.xlsx")
         st.dataframe(df, use_container_width=True, hide_index=True)
     else:
-        st.info("Nenhum dado de calendário disponível para este ano.")
+        st.info("Sem dados de calendário disponiveis para este ano.")
 
 def pagina_resultados():
     st.title("🏁 Resultados")
