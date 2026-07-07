@@ -5,7 +5,7 @@ import pandas as pd
 import streamlit as st
 import fastf1
 
-st.set_page_config(page_title="F1 Analytics Pro", layout="wide")
+st.set_page_config(page_title="UC00614 - Integrar sistemas de informação", layout="wide")
 
 # Inicialização do Cache em disco da FastF1 para acelerar buscas
 try:
