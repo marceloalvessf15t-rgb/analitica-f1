@@ -1,11 +1,10 @@
 import io
 from datetime import datetime
-
 import pandas as pd
 import streamlit as st
 import fastf1
-
-st.set_page_config(page_title="UC00614 - Integrar sistemas de informação", layout="wide")
+import json
+import sys
 
 # Inicialização do Cache em disco da FastF1 para acelerar buscas
 try:
@@ -29,7 +28,7 @@ def obter_calendario_ano(ano):
         schedule = schedule[schedule["EventFormat"] != "testing"]
         df = schedule[["RoundNumber", "EventName", "OfficialEventName", "Location", "Country", "EventDate"]].copy()
         
-        # Formatar a data para exibir  (dia-mes e ano)
+        # Formatar a data para exibir (dia-mes e ano)
         df["EventDate"] = pd.to_datetime(df["EventDate"]).dt.strftime('%d-%m-%Y')
         
         df.columns = ["Ronda", "Grande Prémio", "Nome Oficial do grande prémio", "Localidade", "País", "Data"]
@@ -81,14 +80,12 @@ def pagina_resultados():
     
     agenda = obter_calendario_ano(ano)
     
-    # PROTEÇÃO: Se a agenda estiver vazia, interrompe a execução antes de dar KeyError
     if agenda.empty or "Ronda" not in agenda.columns:
         st.warning(f"Não foram encontrados Grandes Prémios válidos para o ano de {ano}.")
         return
 
     gp = st.selectbox("Grande Prémio", agenda["Grande Prémio"].unique())
     
-    # Extração segura da ronda
     ronda_linha = agenda.loc[agenda["Grande Prémio"] == gp, "Ronda"]
     if ronda_linha.empty:
         st.error("Não foi possível determinar a ronda deste Grande Prémio.")
@@ -119,15 +116,9 @@ def pagina_resultados():
     
 def pagina_info():
     st.title(" Informação da Aplicação")
+    st.info("### *Esta aplicação foi desenvolvida por: Liliana Mendes e Marcelo Alves.*")
 
-    # Cria uma janela de informação azul com texto grande e em itálico
-    st.info(
-        "### *Esta aplicação foi desenvolvida por: Liliana Mendes e Marcelo Alves.*"
-    )
-
-
-
-def main():
+def main_streamlit():
     st.sidebar.title("🏎Analítica de Dados F1 ")
     op = st.sidebar.radio("Menu", ["Calendário da Temporada", "Resultados por Grande Prémio","Informaçao da aplicação"])
     if op == "Calendário da Temporada":
@@ -137,6 +128,38 @@ def main():
     else:
         pagina_resultados()
 
+# FUNÇÃO ADAPTADA PARA CONVERSAR COM O C#
+def processar_f1_para_csharp(ano, pista, sessao):
+    try:
+        # Carrega a sessão com base no nome do circuito enviado pelo C#
+        session = fastf1.get_session(int(ano), pista, sessao)
+        session.load(laps=False, telemetry=False, weather=False, messages=False)
+        
+        resultados = []
+        for index, row in session.results.iterrows():
+            # Proteção para garantir valores válidos de posição
+            pos = int(row['Position']) if pd.notna(row['Position']) else 0
+            if pos == 0: continue # Ignora posições inválidas
+            
+            resultados.append({
+                "Posicao": pos,
+                "Piloto": str(row['Abbreviation']) if pd.notna(row['Abbreviation']) else str(row['DriverNumber']),
+                "Equipa": str(row['TeamName']),
+                "Pontos": float(row['Points']) if pd.notna(row['Points']) else 0.0
+            })
+            
+        # O C# vai ler este print JSON exato da consola
+        print(json.dumps(resultados))
+        
+    except Exception as e:
+        print(json.dumps([{"Posicao": 1, "Piloto": "ERRO", "Equipa": str(e), "Pontos": 0.0}]))
+
+# FILTRO PRINCIPAL DE EXECUÇÃO
 if __name__ == "__main__":
-    main()
+    # Se o C# passar argumentos (ex: python appf1.py 2024 Monaco R)
+    if len(sys.argv) > 3:
+        processar_f1_para_csharp(sys.argv[1], sys.argv[2], sys.argv[3])
+    else:
+        # Se for o Streamlit no servidor ou execução manual local
+        main_streamlit()
 
