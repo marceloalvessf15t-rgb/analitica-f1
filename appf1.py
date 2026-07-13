@@ -7,6 +7,30 @@ import fastf1.plotting
 import matplotlib.pyplot as plt
 import json
 import sys
+import asyncio
+
+async def obter_dados_fastf1_async(ano: int, pista: str, sessao: str):
+    """
+    Obtém uma sessão do FastF1 de forma assíncrona sem bloquear o loop principal.
+    
+    Identificadores de sessão válidos: 
+    'FP1', 'FP2', 'FP3', 'Q' (Qualificação), 'S' (Sprint), 'SQ' ou 'R' (Corrida).
+    """
+    loop = asyncio.get_running_loop()
+    
+    # 1. Cria o objeto da sessão (operação leve)
+    session = fastf1.get_session(ano, pista, sessao)
+    
+    # 2. Executa o session.load() (operação pesada de I/O) numa thread separada
+    # Isso impede que a sua aplicação asdf ou API congele durante o download (50-100MB)
+    await loop.run_in_executor(None, session.load)
+    
+    return session
+
+
+
+
+
 
 # Configuração da página Streamlit (deve ser o primeiro comando Streamlit)
 st.set_page_config(page_title="Analítica de Dados F1", layout="wide")
