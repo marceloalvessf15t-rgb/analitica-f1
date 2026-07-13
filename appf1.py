@@ -27,6 +27,23 @@ async def obter_dados_fastf1_async(ano: int, pista: str, sessao: str):
     
     return session
 
+from fastf1.exceptions import DataNotLoadedError, NoLapDataError
+
+async def obter_dados_seguros(ano, pista, sessao):
+    try:
+        session = await obter_dados_fastf1_async(ano, pista, sessao)
+        return { "sucesso": True, "evento": session.event['EventName'], "erro": None }
+    except ValueError:
+        return { "sucesso": False, "evento": None, "erro": "Parametros invalidos (ano/pista)" }
+    except (DataNotLoadedError, NoLapDataError):
+        return { "sucesso": False, "evento": None, "erro": "Dados nao disponiveis para esta sessao" }
+    except Exception as e:
+        return { "sucesso": False, "evento": None, "erro": f"Erro inesperado: {str(e)}" }
+
+
+
+
+
 
 
 
